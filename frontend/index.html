@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Redpen – Resume score</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2312205a'/%3E%3Cpath d='M9 17l5 5 9-12' fill='none' stroke='%23ff5a4d' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+    // apply the saved theme before the page paints (no flash)
+    (function () {
+      var t = localStorage.getItem('rp_theme');
+      if (!t) t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body>
+
+<datalist id="roles"></datalist>
+
+<!-- ============ STARTUP (no login: the app opens straight away) ============ -->
+<div id="boot-splash" class="boot"><p class="muted">Loading Redpen…</p></div>
+<div id="boot-error" class="boot hidden">
+  <div>
+    <h2>Cannot start</h2>
+    <p class="muted" id="boot-msg"></p>
+    <button id="retry" class="btn primary" type="button" style="margin-top:18px">Try again</button>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app-view" class="app hidden">
+  <aside class="rail">
+    <div class="brand-mark">
+      <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#fff"/><path d="M9 17l5 5 9-12" fill="none" stroke="#e03a2f" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Redpen</span>
+    </div>
+
+    <!-- Sign in is optional and sits right at the top, above everything else, so it's easy to find,
+         but the app underneath still works fully as a guest with no account. -->
+    <div id="auth-slot" class="auth-slot"></div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-page="analyze">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 14l2 2 4-4"/></svg>
+        Score a resume
+      </button>
+      <button class="nav-item" data-page="builder">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        Build a resume
+      </button>
+      <button class="nav-item" data-page="compare">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/></svg>
+        Compare versions
+      </button>
+      <button class="nav-item" data-page="history">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        Past scores
+      </button>
+    </nav>
+    <button type="button" class="theme-toggle rail-toggle" aria-label="Switch colour theme"></button>
+    <p id="me-note" class="me-note">No account needed. Your scores are saved in this browser.</p>
+  </aside>
+
+  <main class="content">
+
+    <!-- Build a resume (new: create one from scratch, step by step) -->
+    <section id="page-builder" class="page hidden">
+      <div id="builder-root"></div>
+    </section>
+
+    <!-- Score a resume -->
+    <section id="page-analyze" class="page">
+      <div id="form-area">
+        <header class="page-head">
+          <h1>Score a resume</h1>
+          <p class="muted">Tell us who you are and what you are aiming for. Paste a job description if you have one; if not, pick a role and we score against what employers usually ask for.</p>
+        </header>
+
+        <form id="analyze-form" novalidate>
+          <div class="two-col">
+            <div>
+              <div class="lbl-row">
+                <label class="lbl">Resume</label>
+                <div class="seg" role="tablist" aria-label="How to add your resume">
+                  <button type="button" class="seg-btn active" data-input="file">Upload file</button>
+                  <button type="button" class="seg-btn" data-input="text">Paste text</button>
+                </div>
+              </div>
+              <div id="drop-main"></div>
+              <textarea id="resume-text" class="hidden" rows="10" maxlength="12000" placeholder="Paste the full text of your resume here."></textarea>
+            </div>
+            <div id="target-analyze"></div>
+          </div>
+
+          <p id="analyze-error" class="error hidden" role="alert"></p>
+          <div class="submit-row">
+            <button id="analyze-btn" class="btn primary" type="submit">Score my resume</button>
+            <span id="usage-line" class="muted"></span>
+          </div>
+        </form>
+      </div>
+
+      <div id="loading" class="loading hidden" aria-live="polite">
+        <svg class="scribble" viewBox="0 0 200 184" width="120" height="110"><path class="pen" d="M96 20 C150 12 186 44 184 88 C182 134 138 168 92 164 C44 160 10 126 14 82 C18 38 62 14 112 26"/></svg>
+        <h2 id="loading-text">Reading your resume</h2>
+        <p class="muted"><span id="loading-time">0.0</span>s</p>
+      </div>
+
+      <div id="result" class="hidden"></div>
+    </section>
+
+    <!-- Compare -->
+    <section id="page-compare" class="page hidden">
+      <div id="compare-form-area">
+        <header class="page-head">
+          <h1>Compare two versions</h1>
+          <p class="muted">Upload an old and a new version of your resume. Both are scored against the same target, so you can see if your edits helped.</p>
+        </header>
+        <form id="compare-form" novalidate>
+          <div class="pair">
+            <div><label class="lbl">Version A</label><div id="drop-a"></div></div>
+            <div><label class="lbl">Version B</label><div id="drop-b"></div></div>
+          </div>
+          <div id="target-compare" class="target-wide"></div>
+          <p id="compare-error" class="error hidden" role="alert"></p>
+          <button id="compare-btn" class="btn primary" type="submit">Compare versions</button>
+        </form>
+      </div>
+      <div id="compare-loading" class="loading hidden" aria-live="polite">
+        <svg class="scribble" viewBox="0 0 200 184" width="120" height="110"><path class="pen" d="M96 20 C150 12 186 44 184 88 C182 134 138 168 92 164 C44 160 10 126 14 82 C18 38 62 14 112 26"/></svg>
+        <h2>Scoring both versions</h2>
+        <p class="muted"><span id="compare-time">0.0</span>s</p>
+      </div>
+      <div id="compare-result" class="hidden"></div>
+    </section>
+
+    <!-- History -->
+    <section id="page-history" class="page hidden">
+      <header class="page-head">
+        <h1>Past scores</h1>
+        <p class="muted">Every resume you have scored is saved here.</p>
+      </header>
+      <div id="history-chart"></div>
+      <div id="history-list"></div>
+    </section>
+  </main>
+</div>
+
+<!-- ============ PUBLIC SHARED REPORT (no login) ============ -->
+<div id="public-view" class="public hidden">
+  <header class="public-bar">
+    <div class="brand-mark dark">
+      <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#12205a"/><path d="M9 17l5 5 9-12" fill="none" stroke="#ff5a4d" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Redpen</span>
+    </div>
+    <div class="public-actions">
+      <button type="button" class="theme-toggle" aria-label="Switch colour theme"></button>
+      <a class="btn primary small" id="public-cta" href="#/">Score your own resume</a>
+    </div>
+  </header>
+  <main class="content public-content"><div id="public-result"></div></main>
+</div>
+
+<!-- ============ SIGN IN / CREATE ACCOUNT (optional; guests can close this) ============ -->
+<div id="auth-modal" class="modal-overlay hidden">
+  <div class="modal auth-box" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+    <button type="button" id="auth-close" class="modal-x" aria-label="Close">&times;</button>
+    <div class="tabs">
+      <button type="button" class="tab active" data-tab="signin">Sign in</button>
+      <button type="button" class="tab" data-tab="signup">Create account</button>
+    </div>
+    <h2 id="auth-modal-title">Sign in</h2>
+    <p class="muted" id="auth-sub">Sign in to keep your info handy across devices. You can also just continue as a guest.</p>
+
+    <form id="signin-form" novalidate>
+      <div class="field"><label class="lbl" for="signin-email">Email</label><input id="signin-email" type="email" autocomplete="email" required></div>
+      <div class="field"><label class="lbl" for="signin-password">Password</label>
+        <div class="pw"><input id="signin-password" type="password" autocomplete="current-password" required>
+          <button type="button" class="link-btn pw-toggle" data-for="signin-password">Show</button></div>
+      </div>
+      <p id="signin-error" class="error hidden" role="alert"></p>
+      <button class="btn primary block" type="submit">Sign in</button>
+    </form>
+
+    <form id="signup-form" class="hidden" novalidate>
+      <div class="field"><label class="lbl" for="signup-name">Name</label><input id="signup-name" type="text" maxlength="100" autocomplete="name" required></div>
+      <div class="field"><label class="lbl" for="signup-email">Email</label><input id="signup-email" type="email" autocomplete="email" required></div>
+      <div class="field"><label class="lbl" for="signup-password">Password</label>
+        <div class="pw"><input id="signup-password" type="password" minlength="6" autocomplete="new-password" required>
+          <button type="button" class="link-btn pw-toggle" data-for="signup-password">Show</button></div>
+      </div>
+      <p id="signup-error" class="error hidden" role="alert"></p>
+      <button class="btn primary block" type="submit">Create account</button>
+    </form>
+
+    <p class="switch"><button type="button" id="auth-guest-btn" class="link-btn">Continue as guest instead</button></p>
+  </div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
