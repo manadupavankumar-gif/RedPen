@@ -121,10 +121,12 @@ textarea { resize: vertical; }
 .history-score { font-size: 1.4rem; color: var(--primary-dark); }
 /* Footer */
 footer {
+  display: block;
+  width: 100%;
   text-align: center;
-  padding: 1.5rem 1rem;
-  color: var(--muted);
-  font-size: 0.9rem;
-  border-top: 1px solid var(--border);
-  margin-top: 2rem;
+  padding: 20px;
+  margin-top: 40px;
+  color: #6b7280;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
 }
