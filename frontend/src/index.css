@@ -119,3 +119,12 @@ textarea { resize: vertical; }
 .history-item p { margin: 0; }
 .history-item > div:first-child { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .history-score { font-size: 1.4rem; color: var(--primary-dark); }
+/* Footer */
+footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  border-top: 1px solid var(--border);
+  margin-top: 2rem;
+}
