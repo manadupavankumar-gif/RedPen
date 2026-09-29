@@ -10,6 +10,7 @@ export default function App() {
   return (
     <>
       <Navbar />
+
       <main className="container">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -18,6 +19,10 @@ export default function App() {
           <Route path="/history" element={<History />} />
         </Routes>
       </main>
+
+      <footer>
+        © 2026 Manadu Pavan Kumar. All Rights Reserved.
+      </footer>
     </>
   );
 }
