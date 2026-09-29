@@ -169,7 +169,7 @@ public class PdfResumeExporter {
             cs.beginText();
             cs.setFont(bold, 10.5f);
             cs.setCharacterSpacing(0.8f);
-            cs.newLineAtPosition(MARGIN, y);
+            cs.newLineAtOffset(MARGIN, y);
             cs.showText(sanitize(label.toUpperCase()));
             cs.endText();
             cs.setCharacterSpacing(0f);
@@ -235,7 +235,7 @@ public class PdfResumeExporter {
             cs.setNonStrokingColor(color[0], color[1], color[2]);
             cs.beginText();
             cs.setFont(font, size);
-            cs.newLineAtPosition(x, yy);
+            cs.newLineAtOffset(x, yy);
             cs.showText(sanitize(s));
             cs.endText();
         }
